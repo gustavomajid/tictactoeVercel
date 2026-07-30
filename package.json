@@ -4,12 +4,13 @@
   "description": "",
   "main": "webServer.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node webServer.js",
+    "test": "node --test",
+    "check": "node --check webServer.js && node --check clientScript.js && node --check gameRules.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "websocket": "^1.0.31",
-    "ws": "^7.2.5"
+    "websocket": "^1.0.31"
   }
 }
