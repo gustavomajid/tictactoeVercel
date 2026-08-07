@@ -10,17 +10,18 @@ const connectBtn = document.getElementById('connectBtn')
 const newGameBtn = document.getElementById('newGame')
 const currGames = document.getElementById('currGames')
 const joinGame = document.querySelector('button[type="submit"]')
-const cells = document.querySelectorAll('#cell')
+const cells = document.querySelectorAll('.cell')
 const gameBoard = document.querySelector('#board')
 const userCol = document.querySelector('.flex-col1')
+
+cells.forEach(cell => cell.addEventListener('click', clickCell))
 
 connectBtn.addEventListener('click', () => {
     socket = new WebSocket('ws://localhost:8080')
     socket.onopen = function(event) {}
     newGameBtn.addEventListener('click', () => {
         const payLoad = {
-            'method': 'create',
-            'clientId': clientId
+            'method': 'create'
         }
 
         socket.send(JSON.stringify(payLoad))
@@ -42,7 +43,7 @@ connectBtn.addEventListener('click', () => {
                 console.log(`game id is ${gameId} and your symbol is ${yourSymbol}`)
                 cells.forEach(cell => {
                     cell.classList.remove('x')
-                    cell.classList.remove('cirlce')
+                    cell.classList.remove('circle')
                 })
                 break
 
@@ -63,10 +64,8 @@ connectBtn.addEventListener('click', () => {
                 yourSymbol = data.game.players[1].symbol
                 console.log(`game id is ${gameId} and your symbol is ${yourSymbol}`)
                 cells.forEach(cell => {
-                    console.log(`cell classes are ${cell.classList}`)
                     cell.classList.remove('x')
-                    cell.classList.remove('cirlce')
-
+                    cell.classList.remove('circle')
                 })
                 break
             case 'updateBoard':
@@ -75,31 +74,28 @@ connectBtn.addEventListener('click', () => {
                 game = data.game
                 board = game.board
                 const symbolClass = yourSymbol == 'x' ? 'x' : 'circle'
+                gameBoard.classList.remove('x', 'circle')
                 gameBoard.classList.add(symbolClass)
-                index = 0
-                cells.forEach(cell => {
+                cells.forEach((cell, index) => {
+                    cell.classList.remove('x', 'circle')
                     if (board[index] == 'x')
                         cell.classList.add('x')
                     else if (board[index] == 'o')
                         cell.classList.add('circle')
-                    else
-                        cell.addEventListener('click', clickCell)
-                    index++
                 })
 
-                game.players.forEach((player) => {
-                    if (player.clientId == +clientId && player.isTurn == true) {
-                        isTurn = true
-                        console.log(`your turn`)
-                    }
-                })
+                isTurn = game.players.some(player => (
+                    player.clientId == +clientId && player.isTurn == true
+                ))
                 break
 
             case 'gameEnds':
+                isTurn = false
                 console.log(`Winner is ${data.winner}`)
                 window.alert(`Winner is ${data.winner}`)
                 break;
             case 'draw':
+                isTurn = false
                 alert('Its a draw')
                 break
         }
@@ -122,7 +118,6 @@ function selectGame(src) {
 function joingm() {
     const payLoad = {
         'method': 'join',
-        'clientId': clientId,
         'gameId': gameId
     }
     socket.send(JSON.stringify(payLoad))
@@ -133,37 +128,12 @@ function clickCell(event) {
     if (!isTurn || event.target.classList.contains('x') || (event.target.classList.contains('circle')))
         return
 
-    const cellclass = yourSymbol == 'x' ? 'x' : 'circle'
-    event.target.classList.add(cellclass)
-
-    index = 0
-    cells.forEach(cell => {
-        if (cell.classList.contains('x'))
-            board[index] = 'x'
-        if (cell.classList.contains('circle'))
-            board[index] = 'o'
-        index++
-    })
+    const cellIndex = Array.from(cells).indexOf(event.target)
     isTurn = false
-    makeMove()
-}
-
-function makeMove() {
-    index = 0
-    cells.forEach((cell) => {
-        if (cell.classList.contains('x'))
-            game.board[index] == 'x'
-
-        if (cell.classList.contains('circle'))
-            game.board[index] == 'o'
-        index++
-    })
-    cells.forEach(cell => cell.removeEventListener('click', clickCell))
     const payLoad = {
         'method': 'makeMove',
-        'game': game
+        'gameId': gameId,
+        'cellIndex': cellIndex
     }
     socket.send(JSON.stringify(payLoad))
-
-
 }
