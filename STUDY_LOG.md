@@ -8,10 +8,12 @@ O cliente enviava o objeto inteiro da partida após cada jogada. O servidor subs
 
 ### Solução
 
-- O cliente passou a enviar apenas a intenção: partida, jogador e posição.
+- O cliente passou a enviar apenas a intenção: partida e posição.
+- A identidade do jogador passou a ser obtida da conexão WebSocket, nunca do payload.
 - O servidor mantém e altera o tabuleiro oficial.
 - As regras de movimento, vitória e empate foram extraídas para funções puras.
 - Movimentos fora do tabuleiro, fracionários ou sobre células ocupadas são rejeitados.
+- Partidas encerradas rejeitam novas jogadas e mensagens inválidas não derrubam o processo.
 
 ### Conceitos praticados
 
@@ -29,7 +31,7 @@ npm run check
 npm test
 ```
 
-Sete testes cobrem criação do tabuleiro, vitórias horizontais, verticais e diagonais, partidas incompletas, empate, validade e imutabilidade dos movimentos.
+Sete testes cobrem as regras puras. Três testes de integração cobrem identidade vinculada à conexão, estado terminal e mensagens JSON inválidas.
 
 ### Exercício
 

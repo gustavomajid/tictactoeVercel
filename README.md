@@ -7,9 +7,10 @@ Jogo da velha multiplayer com cliente web, servidor Node.js e comunicação por 
 - `client.html` e `clientScript.js`: interface e envio das intenções do jogador;
 - `webServer.js`: conexões, partidas, turnos e transmissão do estado;
 - `gameRules.js`: regras puras de movimento, vitória e empate;
-- `test/gameRules.test.js`: testes determinísticos usando o test runner nativo do Node.js.
+- `test/gameRules.test.js`: testes determinísticos das regras puras;
+- `test/webServer.integration.test.js`: testes do protocolo e da autoridade do servidor.
 
-O navegador envia somente `gameId`, `clientId` e `cellIndex`. O servidor verifica se o jogador possui o turno, se a célula existe e se está vazia antes de alterar o tabuleiro. Dessa forma, o cliente não controla o estado oficial da partida.
+O navegador envia somente `gameId` e `cellIndex` ao jogar. O servidor identifica o jogador pela conexão WebSocket, verifica turno, estado da partida, intervalo e ocupação antes de alterar o tabuleiro. Dessa forma, o cliente não controla sua identidade nem o estado oficial da partida.
 
 ## Executar
 

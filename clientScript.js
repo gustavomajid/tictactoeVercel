@@ -21,8 +21,7 @@ connectBtn.addEventListener('click', () => {
     socket.onopen = function(event) {}
     newGameBtn.addEventListener('click', () => {
         const payLoad = {
-            'method': 'create',
-            'clientId': clientId
+            'method': 'create'
         }
 
         socket.send(JSON.stringify(payLoad))
@@ -119,7 +118,6 @@ function selectGame(src) {
 function joingm() {
     const payLoad = {
         'method': 'join',
-        'clientId': clientId,
         'gameId': gameId
     }
     socket.send(JSON.stringify(payLoad))
@@ -135,7 +133,6 @@ function clickCell(event) {
     const payLoad = {
         'method': 'makeMove',
         'gameId': gameId,
-        'clientId': clientId,
         'cellIndex': cellIndex
     }
     socket.send(JSON.stringify(payLoad))
